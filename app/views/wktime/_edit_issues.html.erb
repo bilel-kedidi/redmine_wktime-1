@@ -1,5 +1,5 @@
-<% 
-@wday_index = 1 
+<%
+@wday_index = 1
 @trOpen = false
 @row = 0
 @total_hours = 0.0
@@ -9,13 +9,13 @@ for i in 0.. @renderer.getDaysPerSheet - 1
 end
 thours = nums = dayHrArr #Array[0.0, 0.0, 0.0, 0.0,0.0, 0.0, 0.0]
 prev_entry = nil
-entry = nil 
+entry = nil
 currencySym = ""
 %>
 
 <div class="wk-contextual">
 <% if @editable %>
-	<%= link_to l(:button_add_row), "#", { :onclick => "javascript:addRow();projectChanged(document.getElementsByName('time_entry[][project_id]'),0);", :class => 'icon icon-time-add' }%>
+	<%= link_to l(:button_add_row), "#", { :onclick => "javascript:addRow();projectChanged(document.getElementsByName('time_entry[][project_id]'),0);  initbtnUpbtnDown(); initListenerTime()", :class => 'icon icon-time-add' }%>
 <% end %>
 </div>
 <div style="overflow: auto">
@@ -41,22 +41,22 @@ currencySym = ""
 			rows.each.with_index do |entry, i|
 %>
 
-				
-				<% if !entry.blank? %>				
+
+				<% if !entry.blank? %>
 					<% if !issueWritten %>
 						<% # this is a new Row %>
 						<% # close the previously opened row first %>
 						<%= render :partial => 'edit_hours', :locals => {:entry => nil, :isTemplate => false,
 							:padAt => 'end', :padTill => @renderer.getDaysPerSheet + 1}%>
-					
-						<%= render :partial => 'edit_issues2', :locals => {:entry => entry, :isTemplate => false}%>		
+
+						<%= render :partial => 'edit_issues2', :locals => {:entry => entry, :isTemplate => false}%>
 						<% issueWritten = true %>
 					<% end %>
 					<% # fill the days till the current day %>
-					<%= render :partial => 'edit_hours', :locals => {:entry => nil, :isTemplate => false, 
+					<%= render :partial => 'edit_hours', :locals => {:entry => nil, :isTemplate => false,
 							:padAt => 'begin', :padTill => i+1}%>
-					<%= render :partial => 'edit_hours', :locals => {:entry => entry, :isTemplate => false, 
-					:padAt => 'begin', :padTill => i+2}%>	
+					<%= render :partial => 'edit_hours', :locals => {:entry => entry, :isTemplate => false,
+					:padAt => 'begin', :padTill => i+2}%>
 					<% thours[i] += entry.hours unless @prev_template || entry.hours.blank?%>
 					<% @total_hours += entry.hours unless @prev_template%>
 					<% currencySym = controller.getUnit(entry) %>
@@ -72,7 +72,7 @@ currencySym = ""
 	<% currencySym = controller.getUnit(nil) %>
 	<%= render :partial => 'edit_issues2', :locals => {:entry => nil, :isTemplate => false}%>
 <% end %>
-	
+
 	<% # pad any incomplete days %>
 	<%= render :partial => 'edit_hours', :locals => {:entry => nil, :isTemplate => false,
 		:padAt => 'end', :padTill => @renderer.getDaysPerSheet + 1}%>
@@ -85,7 +85,7 @@ currencySym = ""
 	<% if showBilling %>
 		<td></td>
 	<% end %>
-	<% if controller.enterCommentInRow %>	
+	<% if controller.enterCommentInRow %>
 		<td class="comments"></td>
 	<% end %> <!-- for currency -->
 	<% if !controller.getUnitLabel.blank? %>
@@ -102,15 +102,15 @@ currencySym = ""
 	<% if @renderer.showSpentOnInRow %>
 		<td></td>
 	<% end %>
-	<% thours.each_with_index do |th,i| %>		
+	<% thours.each_with_index do |th,i| %>
 		<td align="center"><%= currencySym %>&nbsp;<span id=<%= "day_total_#{i+1}" %>><%= ("%.2f" % th) %></span></td>
 	<% end %>
-	<td>	
+	<td>
 	<b>	<%= l(:label_total) %>: <%= currencySym %>&nbsp;<span id="total_hours"><%= ("%.2f" % @total_hours) %></span></b>
 	<%=h hidden_field_tag('total', ("%.2f" % @total_hours) ) %>
 	<%=h hidden_field_tag('unit', currencySym) %>
 	</td>
-	</tr>	
+	</tr>
 	<%=h hidden_field_tag('hidden_clock_in_out', "" )  %>
 	 <% if controller.showWorktimeHeader && @renderer.showWorkTimeHeader %>
 		<!-- Remaining Hours -->
@@ -124,7 +124,7 @@ currencySym = ""
 			<%= submit_tag l(:button_save), :id => 'wktime_save', :name => 'wktime_save',  :disabled => !(@row > 0)%>
 			<%= submit_tag l(:button_save_continue), :id => 'wktime_save_continue', :name => 'wktime_save_continue' , :disabled => !(@row > 0)%>
 		<% if controller.hasApprovalSystem #!Setting.plugin_redmine_wktime['wktime_use_approval_system'].blank? &&
-				Setting.plugin_redmine_wktime['wktime_use_approval_system'].to_i == 1 %>	
+				Setting.plugin_redmine_wktime['wktime_use_approval_system'].to_i == 1 %>
 				<%= submit_tag l(:button_submit),:id => 'wktime_submit', :name => 'wktime_submit', :onclick => "return validateMinhour('#{controller.minHour}','#{getNonWorkingDayColumn(params[:startday])}','#{controller.minHourPerWeek}', '#{controller.maxHourPerWeek}');" , :disabled => !(@row > 0)%>
 		<% end %>
 	<% end %>
@@ -132,7 +132,7 @@ currencySym = ""
 		Setting.plugin_redmine_wktime['wktime_use_approval_system'].to_i == 1 %>
 		<% if !@wktime.nil? && @wktime.status == 's' %>
 			<%= submit_tag l(:button_wk_unsubmit), :name => 'wktime_unsubmit', :disabled => !(@row > 0)%>
-			<% if controller.check_approvable_status() %>		
+			<% if controller.check_approvable_status() %>
 				<%= submit_tag l(:button_wk_approve), :name => 'wktime_approve', :disabled => !(@row > 0)%>
 				<%=h hidden_field_tag('wktime_notes', "") %>
 				<% # the jquery dialog box doesn't port the reject button value%>
@@ -141,7 +141,7 @@ currencySym = ""
 					:onclick => "return showNotes();" %>
 			<% end %>
 		<% elsif  !@wktime.nil? && @wktime.status == 'a' %>
-			<% if controller.check_approvable_status()  %>		
+			<% if controller.check_approvable_status()  %>
 				<%= submit_tag l(:button_wk_unapprove), :id => 'wktime_unapprove', :name => 'wktime_unapprove'%>
 			<% end %>
 		<% end %>
@@ -150,7 +150,7 @@ currencySym = ""
 <div class="splitcontentright">
 <div class="contextual">
 <% if @editable %>
-	<%= link_to l(:button_add_row), "#", { :onclick => "javascript:addRow();projectChanged(document.getElementsByName('time_entry[][project_id]'),0);", :class => 'icon icon-time-add' } %>
+	<%= link_to l(:button_add_row), "#", { :onclick => "javascript:addRow();projectChanged(document.getElementsByName('time_entry[][project_id]'),0);  initbtnUpbtnDown(); initListenerTime()", :class => 'icon icon-time-add' } %>
 <% end %>
 </div>
 </div>

@@ -28,12 +28,21 @@
 			<%#if this is from a previous template, don't print the hours%>
 			<td class="hours">
 				<div style="float: left; ">
-				<%=h text_field_tag('hours' + @row.to_s() +'[]', entry.nil? || @prev_template || entry.hours.blank? ? '' : ("%.2f" % entry.hours) ,:size => "#{controller.textfield_size}",
-				:disabled => disable,
-				:onchange => "validateTotal(this, #{@wday_index},'#{controller.maxHour}');") %>
-				
-				<%=h hidden_field_tag('ids' + @row.to_s() +'[]', entry.nil? || @prev_template ? '' : entry.id) %>
-				<%=h hidden_field_tag('disabled' + @row.to_s() +'[]', disable ) %>
+					<%=h text_field_tag('hours' + @row.to_s() +'[]', entry.nil? || @prev_template || entry.hours.blank? ? '' : ("%.2f" % entry.hours) ,:size => "#{controller.textfield_size}",
+															:disabled => disable,
+															style: 'display: none',
+															:onchange => "validateTotal(this, #{@wday_index},'#{controller.maxHour}');") %>
+					<span class="time_entry_hours_div" style=" display: flex">
+						<span class="times times-hours">
+							<input class='times_hours_input' type="number" min="0" max="23" step="1" value="<%= entry ? entry.hours.floor : 0 %>" data-increment="1">
+						</span>
+						<span class="times times-minutes">
+							<input class='times_minutes_input' data-increment="15" type="number" min="0" max="59" step="1" value="<%= entry ? ((entry.hours - entry.hours.floor ) * 60).round : 0 %>" >
+						</span>
+					</span>
+
+					<%=h hidden_field_tag('ids' + @row.to_s() +'[]', entry.nil? || @prev_template ? '' : entry.id) %>
+					<%=h hidden_field_tag('disabled' + @row.to_s() +'[]', disable ) %>
 				
 				<% cvs = [] %>
 				<% show_custfield_img = false %>

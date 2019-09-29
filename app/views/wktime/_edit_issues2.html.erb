@@ -1,9 +1,9 @@
 <tr class="time-entry <%= cycle("odd", "even") %>">
 <% @trOpen = true %>
 <% @row += 1 unless isTemplate %>
-<% 
-project_id = entry.nil? ? (@logtime_projects.blank? ? 0 : @logtime_projects[0].id) : entry.project_id	
-if params[:enter_issue_id].blank? 
+<%
+project_id = entry.nil? ? (@logtime_projects.blank? ? 0 : @logtime_projects[0].id) : entry.project_id
+if params[:enter_issue_id].blank?
 
 	projects = options_for_wktime_project(@logtime_projects)
 	project = projects.detect {|p| p[1].to_i == entry.project_id} unless entry.nil?
@@ -15,7 +15,7 @@ if params[:enter_issue_id].blank?
 	<td class="issue" align="left" width="<%= Setting.plugin_redmine_wktime['wktime_project_dd_width'] %>px">
 		<% project_name = entry.nil? ? (@logtime_projects.blank? ? 0 : @logtime_projects[0].id) : entry.project.name %>
 		<% if @editable %>
-			<%=h select_tag(isTemplate ? '__template__time_entry[][project_id]' : 'time_entry[][project_id]', 
+			<%=h select_tag(isTemplate ? '__template__time_entry[][project_id]' : 'time_entry[][project_id]',
 			options_for_select(projects, :selected =>  project_id),
 			:onchange => "projectChanged(this,#{@row.to_s()});", :style=> "width:#{Setting.plugin_redmine_wktime['wktime_project_dd_width']}px" ) %>
 		<% else %>
@@ -32,11 +32,11 @@ if params[:enter_issue_id].blank?
 	</td>
 <% else %>
 	<td class="issue" align="left" >
-		<%=h hidden_field_tag(isTemplate ? '__template__time_entry[][project_id]' : 'time_entry[][project_id]', 
+		<%=h hidden_field_tag(isTemplate ? '__template__time_entry[][project_id]' : 'time_entry[][project_id]',
 		(entry.nil? ? controller.getDefultProject : entry.project_id.to_s)  ) %>
 	</td>
 <% end %>
-	<% 
+	<%
 	curr_issue_found = false
 	issues = Array.new
 	allIssues = @projectIssues[project_id]
@@ -46,11 +46,11 @@ if params[:enter_issue_id].blank?
 		issues << [ "", ""]
 	else
 		issues << [ "--- #{l(:actionview_instancetag_blank_option)} ---", '-1' ] if allIssues.count > 1
-	end	
+	end
 	unless allIssues.blank?
 		allIssues.each do |i|
-			#issues << [ i.id.to_s + ' - ' + i.subject, i.id ] 			
-			issues << [ i.to_s , i.id ] 
+			#issues << [ i.id.to_s + ' - ' + i.subject, i.id ]
+			issues << [ i.to_s , i.id ]
 			curr_issue_found = true if !entry.nil? && i.id == entry.issue_id
 		end
 	end
@@ -71,12 +71,12 @@ if params[:enter_issue_id].blank?
 			end
 		end
 	end
-			
+
 	%>
-	
+
 	<td class="issue" align="left" width="<%= Setting.plugin_redmine_wktime['wktime_issue_dd_width'] %>px">
 		<% if @editable %>
-			<%=h select_tag(isTemplate ? '__template__time_entry[][issue_id]' : 'time_entry[][issue_id]', 
+			<%=h select_tag(isTemplate ? '__template__time_entry[][issue_id]' : 'time_entry[][issue_id]',
 			options_for_select(issues, :selected =>  entry.nil? ? 0 : entry.issue_id, :required => true),
 			:style=> "width:#{Setting.plugin_redmine_wktime['wktime_issue_dd_width']}px" ) %>
 		<% else %>
@@ -85,12 +85,12 @@ if params[:enter_issue_id].blank?
 	</td>
 <% else %>
 	<td class="project" align="left" >
-		<%=h hidden_field_tag(isTemplate ? '__template__time_entry[][project_id]' : 'time_entry[][project_id]', 
+		<%=h hidden_field_tag(isTemplate ? '__template__time_entry[][project_id]' : 'time_entry[][project_id]',
 		(entry.nil? ? '' : entry.project_id.to_s)  ) %>
 	</td>
 <td class="issue" colspan="-1" align="left" width="<%= Setting.plugin_redmine_wktime['wktime_issue_dd_width'] %>px">
-		<%=h text_field_tag(isTemplate ? '__template__time_entry[][issue_id]' : 'time_entry[][issue_id]', 
-		entry.nil? ? '' : entry.issue_id, :onkeypress => "issueAutocomplete(this,#{@row.to_s()});", 
+		<%=h text_field_tag(isTemplate ? '__template__time_entry[][issue_id]' : 'time_entry[][issue_id]',
+		entry.nil? ? '' : entry.issue_id, :onkeypress => "issueAutocomplete(this,#{@row.to_s()});",
 		:style => "width:#{Setting.plugin_redmine_wktime['wktime_issue_dd_width']}px" ) %>
 </td>
 <% end %>
@@ -107,7 +107,7 @@ if params[:enter_issue_id].blank?
 		activity = projActList.detect {|a| a.id == entry.activity_id} unless entry.nil?
 		#check if the activity, which was previously reported time, is still visible
 		#if it is not visible, just show the id alone
-	
+
 		activities = projActList.collect {|a| [a.name, a.id]}
 		activities.unshift( [ entry.activity.name, entry.activity_id ] )if !entry.nil? && activity.blank? && !entry.activity_id.nil? && !entry.activity_id == -1
 	# add an Please select to the activities array
@@ -119,7 +119,7 @@ if params[:enter_issue_id].blank?
 <% if controller.showActivityDD %>
 	<td class="issue" align="left" width="<%= Setting.plugin_redmine_wktime['wktime_actv_dd_width'] %>px">
 	<% if @editable %>
-		<%=h select_tag(isTemplate ? '__template__time_entry[][activity_id]' : 'time_entry[][activity_id]', 
+		<%=h select_tag(isTemplate ? '__template__time_entry[][activity_id]' : 'time_entry[][activity_id]',
 		activities.blank? ? nil : options_for_select(activities, :selected => entry.nil? ? 0 : entry.activity_id),
 		:style=> "width:#{Setting.plugin_redmine_wktime['wktime_actv_dd_width']}px" ) %>
 	<% else %>
@@ -128,7 +128,7 @@ if params[:enter_issue_id].blank?
 	</td>
 <% else %>
 	<td class="issue" align="left" >
-		<%=h hidden_field_tag(isTemplate ? '__template__time_entry[][activity_id]' : 'time_entry[][activity_id]', 
+		<%=h hidden_field_tag(isTemplate ? '__template__time_entry[][activity_id]' : 'time_entry[][activity_id]',
 		(entry.nil? || entry.activity_id.blank? ? controller.getDefultActivity : entry.activity_id.to_s)  ) %>
 	</td>
 <% end %>
@@ -137,14 +137,14 @@ if params[:enter_issue_id].blank?
 	billableProjects = nil
 	projBillList = @projClients[project_id]
 	parentId = nil
-	parentType = nil	
+	parentType = nil
 	spentOnTime = nil
 	unless projBillList.blank?
 		unless entry.blank?
 			entryFor = @renderer.getEntrySpentFor(entry)
 			parentId = entryFor[:parent_id]
-			parentType = entryFor[:parent_type]	
-			spentOnTime = entryFor[:spent_on_time]	
+			parentType = entryFor[:parent_type]
+			spentOnTime = entryFor[:spent_on_time]
 		end
 		usrLocationId = @user.wk_user.blank? ? nil : @user.wk_user.location_id
 		spent_for_key = parentType.to_s + '_' + parentId.to_s
@@ -157,7 +157,7 @@ if params[:enter_issue_id].blank?
 <% if showBilling %>
 	<td class="issue" align="left" width="<%= Setting.plugin_redmine_wktime['wktime_project_dd_width'] %>px">
 	<% if @editable %>
-		<%=h select_tag(isTemplate ? '__template__time_entry[][spent_for_attributes][spent_for_key]' : 'time_entry[][spent_for_attributes][spent_for_key]', 
+		<%=h select_tag(isTemplate ? '__template__time_entry[][spent_for_attributes][spent_for_key]' : 'time_entry[][spent_for_attributes][spent_for_key]',
 		billableProjects.blank? ? nil : options_for_select(billableProjects, :selected => spent_for_key),
 		:style=> "width:#{Setting.plugin_redmine_wktime['wktime_project_dd_width']}px" ) %>
 	<% else %>
@@ -170,8 +170,8 @@ if params[:enter_issue_id].blank?
 	Setting.plugin_redmine_wktime['wktime_enter_comment_in_row'].to_i == 1 %>
 	<td class="comments" align="left">
 	<% if @editable %>
-	
-		<%=h text_field_tag(isTemplate ? '__template__time_entry[][comments]' : 'time_entry[][comments]',  
+
+		<%=h text_field_tag(isTemplate ? '__template__time_entry[][comments]' : 'time_entry[][comments]',
 			 (entry.nil? ? '' : entry.comments),:size => 35)%>
 	<% else %>
 		<%=h entry.nil? ? '' : entry.comments%>
@@ -189,7 +189,7 @@ if params[:enter_issue_id].blank?
 <%= render :partial => controller.getCFInRowHTML , :locals => {:entry => entry, :isTemplate => false }%>
 
 <% if @renderer.showSpentOnInRow %>
-				
+
 		<td class="issue" align="left" width="<%= Setting.plugin_redmine_wktime['wktime_issue_dd_width'] %>px">
 		<% if @editable %>
 			<%=h date_field_tag(isTemplate ? '__template__time_entry[][spent_for_attributes][spent_on_time]' : 'time_entry[][spent_for_attributes][spent_on_time]', entry.blank? || entry.spent_on.blank? ? @selectedDate : entry.spent_on)  %>
